@@ -7,7 +7,7 @@ import { getUserRefers } from "@/services/data/refers";
 import { User } from "@/services/db/user";
 import { useAppStore } from "@/services/store/store";
 import { notification } from "@/utils/notifications";
-import { HapticFeedback, initHapticFeedback, isSSR } from "@tma.js/sdk-react";
+/* import { HapticFeedback, initHapticFeedback, isSSR } from "@tma.js/sdk-react"; */
 
 export const InviteComponent = ({ copyInvite }: { copyInvite: () => void }) => {
   return (
@@ -35,11 +35,11 @@ export const RefsScreen: React.FC = () => {
 
   const [hapticFeedback, setHapticFeedback] = useState<HapticFeedback | null>(null);
 
-  useEffect(() => {
+  /*   useEffect(() => {
     if (typeof window !== "undefined" && !isSSR()) {
       setHapticFeedback(initHapticFeedback());
     }
-  }, []);
+  }, []); */
 
   const copyInvite = () => {
     navigator.clipboard.writeText(`https://t.me/touchswap_bot?start=r_${userId}`);
@@ -98,14 +98,14 @@ export const RefsScreen: React.FC = () => {
           <InviteComponent copyInvite={copyInvite} />
         ) : (
           <div className="grid gap-1 my-8 mt-1">
-            {refsList.map(({ username,first, last }, index) => (
+            {refsList.map(({ username, first, last }, index) => (
               <div
                 key={index}
                 className="bg-[#81DBE233] py-[14px] px-4 rounded text-[0.8rem] font-[500] flex items-center overflow-y-scroll h-full"
               >
                 <span className="mr-3">{index + 1}.</span>
                 <Image src="/img/defaultImg.png" alt="default Profile Image" width={20} height={20} />
-                <span className="ml-3">@{username || (first+last) }</span>
+                <span className="ml-3">@{username || first + last}</span>
               </div>
             ))}
           </div>

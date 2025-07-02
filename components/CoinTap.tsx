@@ -6,7 +6,6 @@ import { BgGlowPurple } from "./assets/BgGlowPurple";
 import { ONE_SECOND } from "@/constants";
 import { socketInstance } from "@/services/socket";
 import { useAppStore } from "@/services/store/store";
-import { HapticFeedback, initHapticFeedback, isSSR, retrieveLaunchParams } from "@tma.js/sdk-react";
 
 type TapPosition = {
   key: number;
@@ -29,16 +28,17 @@ export const CoinTap = ({ extraTap, refill }: { extraTap: boolean; refill: boole
   const updateBalance = useAppStore(state => state.updateBalance);
   const useEnergy = useAppStore(state => state.useEnergy);
   const deActivateAutoClick = useAppStore(state => state.deActivateAutoClick);
-  const latestState = useAppStore(state=> state)
+  const latestState = useAppStore(state => state);
 
   const [rotation, setRotation] = useState(0);
   const [hapticFeedback, setHapticFeedback] = useState<HapticFeedback | null>(null);
 
-  useEffect(() => {
+  // we replace with farcaster haptic feedback
+  /*  useEffect(() => {
     if (typeof window !== "undefined" && !isSSR()) {
       setHapticFeedback(initHapticFeedback());
     }
-  }, []);
+  }, []); */
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -58,15 +58,15 @@ export const CoinTap = ({ extraTap, refill }: { extraTap: boolean; refill: boole
 
   const coinClick = (id: number) => {
     const data = JSON.stringify({
-      id:id,
-      user:latestState.user, 
-      freeBoosts:latestState.freeBoosts, 
-      paidBoosts:latestState.paidBoosts, 
-      extraTap:latestState.extraTap,
-      autoClick:latestState.autoClick,
-      rechargeSpeed:latestState.rechargeSpeed,
-     })
-     socketInstance.emit("state-update", data );
+      id: id,
+      user: latestState.user,
+      freeBoosts: latestState.freeBoosts,
+      paidBoosts: latestState.paidBoosts,
+      extraTap: latestState.extraTap,
+      autoClick: latestState.autoClick,
+      rechargeSpeed: latestState.rechargeSpeed,
+    });
+    socketInstance.emit("state-update", data);
   };
 
   const handleCoinTap = (e: any) => {

@@ -3,7 +3,6 @@ import { Balance } from "../Balance";
 import { Modal } from "../ModalBase";
 import { OpenBtnIcon } from "../assets/OpenBtnIcon";
 import { TBoost, useAppStore } from "@/services/store/store";
-import { HapticFeedback, initHapticFeedback, isSSR } from "@tma.js/sdk-react";
 
 type BoostCardProps = {
   title: string;
@@ -28,11 +27,12 @@ export const BoostCard: React.FC<BoostCardProps> = ({ title, icon, desc, initial
 
   const [hapticFeedback, setHapticFeedback] = useState<HapticFeedback | null>(null);
 
-  useEffect(() => {
+  // we replace with farcaster haptic feedback
+  /*  useEffect(() => {
     if (typeof window !== "undefined" && !isSSR()) {
       setHapticFeedback(initHapticFeedback());
     }
-  }, []);
+  }, []); */
 
   useEffect(() => {
     const foundBoost = boosts.find(boost => boost.boostId === id);

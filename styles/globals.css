@@ -34,15 +34,6 @@ body {
   user-select: none;
 }
 
-/* p,
-div,
-span {
-  -khtml-user-select: none;
-  -o-user-select: none;
-  -moz-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-} */
 main {
   height: 100vh;
 }

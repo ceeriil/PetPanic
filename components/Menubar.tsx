@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { MenuBtn } from "./MenuBtn";
 import { BoostIcon } from "./assets/BoostIcon";
@@ -6,8 +6,7 @@ import { CoinIcon } from "./assets/CoinIcon";
 import { SpeakerIcon } from "./assets/SpeakerIcon";
 import { StatsIcon } from "./assets/StatsIcon";
 import { TaskIcon } from "./assets/TaskIcon";
-import {  TScreens, useAppStore } from "@/services/store/store";
-import { isSSR , initHapticFeedback, HapticFeedback} from "@tma.js/sdk-react";
+import { TScreens, useAppStore } from "@/services/store/store";
 
 type MenuLink = {
   label: string;
@@ -44,24 +43,22 @@ export const menuLinks: MenuLink[] = [
 ];
 
 export const Menubar = () => {
-
   const [hapticFeedback, setHapticFeedback] = useState<HapticFeedback | null>(null);
 
-  useEffect(() => {
-    if (typeof window !== 'undefined' && !isSSR()) {
+  // we replace with farcaster haptic feedback
+  /*  useEffect(() => {
+    if (typeof window !== "undefined" && !isSSR()) {
       setHapticFeedback(initHapticFeedback());
     }
-  }, []);
-
-
+  }, []); */
 
   const screen = useAppStore(state => state.screen);
   const setScreen = useAppStore(state => state.setScreen);
 
-  const handleMenuClick=(label:string) => {
-    setScreen(label as TScreens)
-    hapticFeedback?.impactOccurred("light")
-  }
+  const handleMenuClick = (label: string) => {
+    setScreen(label as TScreens);
+    hapticFeedback?.impactOccurred("light");
+  };
 
   return (
     <div
@@ -72,14 +69,13 @@ export const Menubar = () => {
     >
       <div className="bg-[#0D2A28] py-1 px-3 md:px-6 rounded-3xl flex gap-x-[0px] md:gap-x-1 w-full items-center justify-center">
         {menuLinks.map(({ label, icon, activeIcon }) => {
-        
           let isActive = screen === label;
-          if(label == "quests" && (screen == "wallet" || screen =="social")) {
-            isActive = true
+          if (label == "quests" && (screen == "wallet" || screen == "social")) {
+            isActive = true;
           }
 
-          if(label == "home" && screen == "badges" ) {
-            isActive = true
+          if (label == "home" && screen == "badges") {
+            isActive = true;
           }
 
           return (

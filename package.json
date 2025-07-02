@@ -6,7 +6,8 @@
     "dev": "tsc && tsx ./server/index.ts",
     "start": "tsc && tsx ./server/index.ts",
     "build": "next build",
-    "lint": "next lint"
+    "lint": "next lint",
+    "firebase": "firebase emulators:start"
   },
   "dependencies": {
     "@grammyjs/web-app": "^1.3.0",
