@@ -1,4 +1,4 @@
-# Touch Swap Web App
+# PetPanic APP
 
 This is the Telegram Web App for Touch Swap, built using [Next.js](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/).
 
