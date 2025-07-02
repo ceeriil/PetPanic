@@ -6,6 +6,8 @@ import { Toaster } from "react-hot-toast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader } from "@/components/Loader";
 import "@/styles/globals.css";
+import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import { base } from "wagmi/chains";
 
 const ErrorBoundaryError: FC<{ error: unknown }> = ({ error }) => (
   <div>
@@ -58,7 +60,11 @@ const Inner: FC<AppProps> = props => {
     }
   }, [debug]);
 
-  return <App {...props} />;
+  return (
+    <MiniKitProvider apiKey={process.env.NEXT_PUBLIC_CDP_CLIENT_API_KEY} chain={base}>
+      <App {...props} />
+    </MiniKitProvider>
+  );
 };
 
 export default function CustomApp(props: AppProps) {
