@@ -6,95 +6,43 @@ import { Toaster } from "react-hot-toast";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Loader } from "@/components/Loader";
 import "@/styles/globals.css";
-import {
-  SDKProvider,
-  bindMiniAppCSSVars,
-  bindThemeParamsCSSVars,
-  bindViewportCSSVars,
-  isSSR,
-  retrieveLaunchParams,
-  useBackButton,
-  useMiniApp,
-  useThemeParams,
-  useViewport,
-  initMiniApp,
-} from "@tma.js/sdk-react";
-import AppWalletProvider from "@/components/provider/AppWalletProvider";
+import { MiniKitProvider } from "@coinbase/onchainkit/minikit";
+import { base } from "wagmi/chains";
 
 const ErrorBoundaryError: FC<{ error: unknown }> = ({ error }) => (
   <div>
     <p>An unhandled error occurred:</p>
     <blockquote>
-      <code>
-        {error instanceof Error
-          ? error.message
-          : typeof error === "string"
-          ? error
-          : JSON.stringify(error)}
-      </code>
+      <code>{error instanceof Error ? error.message : typeof error === "string" ? error : JSON.stringify(error)}</code>
     </blockquote>
   </div>
 );
 
+// we replace this with farcaster back button
 const BackButtonManipulator: FC = () => {
   const router = useRouter();
   const { back } = useNavigationRouter();
-  const bb = useBackButton(true);
 
-  useEffect(() => {
-    if (!bb) {
-      return;
-    }
-    if (router.pathname === "/") {
-      bb.hide();
-    } else {
-      bb.show();
-    }
-  }, [router, bb]);
-
-  useEffect(() => {
-    return bb && bb.on("click", back);
-  }, [bb, back]);
+  useEffect(() => {}, [router]);
 
   return null;
 };
 
 const App: FC<AppProps> = ({ pageProps, Component }) => {
-  const miniApp = useMiniApp(true);
-  const themeParams = useThemeParams(true);
-  const viewport = useViewport(true);
-
-  useEffect(() => {
-    return miniApp && themeParams && bindMiniAppCSSVars(miniApp, themeParams);
-  }, [miniApp, themeParams]);
-
-  useEffect(() => {
-    return themeParams && bindThemeParamsCSSVars(themeParams);
-  }, [themeParams]);
-
-  useEffect(() => {
-    return viewport && bindViewportCSSVars(viewport);
-  }, [viewport]);
-
   return (
     <>
       <Suspense fallback={<Loader />}>
         <BackButtonManipulator />
-        <AppWalletProvider>
-          <main
-            className="relative bgcover overflowxhidden"
-            style={{ background: `url('/img/stars.svg')` }}
-          >
-            <Component {...pageProps} />
-          </main>
-        </AppWalletProvider>
+        <main className="relative bgcover overflowxhidden" style={{ background: `url('/img/stars.svg')` }}>
+          <Component {...pageProps} />
+        </main>
         <Toaster />
       </Suspense>
     </>
   );
 };
 
-const Inner: FC<AppProps> = (props) => {
+const Inner: FC<AppProps> = props => {
   const debug = useMemo(() => {
     return true;
   }, []);
@@ -103,20 +51,16 @@ const Inner: FC<AppProps> = (props) => {
     if (debug) {
       let el = document.createElement("div");
       document.body.appendChild(el);
-      import("eruda").then((lib) =>
+      import("eruda").then(lib =>
         lib.default.init({
           container: el,
           tool: ["console", "elements"],
-        })
+        }),
       );
     }
   }, [debug]);
 
-  return (
-    <SDKProvider acceptCustomStyles debug={debug}>
-      <App {...props} />
-    </SDKProvider>
-  );
+  return <App {...props} />;
 };
 
 export default function CustomApp(props: AppProps) {

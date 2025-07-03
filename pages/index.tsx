@@ -15,24 +15,14 @@ import {
 } from "@/components/screens";
 import { ONE_SECOND } from "@/constants";
 import { socketInstance } from "@/services/socket";
-import {
-  hasState,
-  STORE_NAME,
-  TAppStore,
-  useAppStore,
-} from "@/services/store/store";
+import { hasState, STORE_NAME, TAppStore, useAppStore } from "@/services/store/store";
 import { NextPageContext } from "next";
-import { initInitData, isSSR } from "@tma.js/sdk-react";
 import { Loader } from "@/components/Loader";
-import {
-  getFreeBoost,
-  getNoLevelBoost,
-  getPayedBoost,
-} from "@/services/data/boost";
+import { getFreeBoost, getNoLevelBoost, getPayedBoost } from "@/services/data/boost";
 import { getUser } from "@/services/data/user";
 import { notification } from "@/utils/notifications";
 import { checkIfMoreThanADay } from "@/utils";
-import toost from "react-hot-toast"
+import toost from "react-hot-toast";
 
 const screens = {
   badges: <BadgesScreen />,
@@ -49,54 +39,45 @@ export default function Home({ deviceType }: { deviceType: string }) {
   const isMobile = deviceType === "mobile";
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
-  const screen = useAppStore((state) => state.screen);
-  const setUser = useAppStore((state) => state.updateUser);
-  const setPaidBoosts = useAppStore((state) => state.setPaidBoosts);
-  const setFreeBoosts = useAppStore((state) => state.setFreeBoosts);
-  const updateEnergyByTime = useAppStore((state) => state.updateEnergyByTime);
+  const screen = useAppStore(state => state.screen);
+  const setUser = useAppStore(state => state.updateUser);
+  const setPaidBoosts = useAppStore(state => state.setPaidBoosts);
+  const setFreeBoosts = useAppStore(state => state.setFreeBoosts);
+  const updateEnergyByTime = useAppStore(state => state.updateEnergyByTime);
   const [foundState, setFoundState] = useState(false);
-  const state = useAppStore((state) => state);
-  const freeBoost = useAppStore((state) => state.freeBoosts);
-
+  const state = useAppStore(state => state);
+  const freeBoost = useAppStore(state => state.freeBoosts);
 
   const screenRender = screens[screen];
 
   const setUpState = (id: number) => {
-    socketInstance.emit("login",id)
-    Promise.all([
-      getUser(id),
-      getFreeBoost(id),
-      getPayedBoost(id),
-      getNoLevelBoost(id),
-    ])
+    socketInstance.emit("login", id);
+    Promise.all([getUser(id), getFreeBoost(id), getPayedBoost(id), getNoLevelBoost(id)])
       .then(([user, freeBoost, payedBoost, noLevelBoost]) => {
         setUser(user);
         setPaidBoosts([...payedBoost, ...noLevelBoost]);
         setFreeBoosts(freeBoost);
         setFoundState(true);
       })
-      .catch((err) => {
+      .catch(err => {
         toost.error("Error occurred");
       });
   };
 
-  const handleLogin = (id:number) => {
-    Promise.all([ getUser(id)]).then(([user])=>{
+  const handleLogin = (id: number) => {
+    Promise.all([getUser(id)]).then(([user]) => {
       setUser(user);
-    })
-  }
+    });
+  };
 
   useEffect(() => {
-     console.log(state)
-    return () => {
-      
-    };
+    console.log(state);
+    return () => {};
   }, [state]);
-
 
   useEffect(() => {
     if (freeBoost.length > 0) {
-      const boostData = freeBoost.map((boost) => {
+      const boostData = freeBoost.map(boost => {
         if (checkIfMoreThanADay(boost.lastUsed!)) {
           return { ...boost, left: boost.totalPerDay };
         }
@@ -107,27 +88,37 @@ export default function Home({ deviceType }: { deviceType: string }) {
   }, []);
 
   useEffect(() => {
-    if (!isSSR()) {
+    /*   if (!isSSR()) {
       if (state.hasData) setFoundState(true);
       else {
         let user = initInitData()?.user;
         if (user) setUpState(user.id);
       }
+    } */
+
+    // IMPORTANT: THIS IS A TEMPORARY SOLUTION FOR WEB. Replace this with farcaster login
+    if (state.hasData) {
+      setFoundState(true);
+    } else {
+      setFoundState(true);
+      const savedUserId = localStorage.getItem("user_id");
+      if (savedUserId) {
+        setUpState(Number(savedUserId));
+      }
     }
 
-    const handleConnect = () => { 
+    const handleConnect = () => {
       setIsConnected(true);
       setTransport(socketInstance.io.engine.transport.name);
       socketInstance.io.engine.on("upgrade", (transport: { name: SetStateAction<string> }) => {
         setTransport(transport.name);
       });
-     
     };
 
     const handleDisconnect = () => {
       setIsConnected(false);
       setTransport("N/A");
-      notification.error('Disconnected',{duration:30000})
+      notification.error("Disconnected", { duration: 30000 });
     };
 
     if (socketInstance.connected) handleConnect();
@@ -145,28 +136,6 @@ export default function Home({ deviceType }: { deviceType: string }) {
     const interval = setInterval(updateEnergyByTime, ONE_SECOND * 2);
     return () => clearInterval(interval);
   }, [updateEnergyByTime]);
-
-  if (!isMobile) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="flex flex-col w-full m-auto justify-center items-center">
-          <div className="text-center mb-10">
-            <p className="text-2xl text-white font-bold mt-2">Leave The Desktop.</p>
-            <p className="text-2xl text-white font-bold mt-2">Mobile Gaming Rocks!</p>
-          </div>
-          <div>
-            <Image
-              className="rounded-lg"
-              src="/img/qrCode.png"
-              alt="QR Code"
-              width={300}
-              height={300}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (!foundState) {
     return (
@@ -188,9 +157,7 @@ export default function Home({ deviceType }: { deviceType: string }) {
 
 export async function getServerSideProps(context: NextPageContext) {
   const UA = context.req?.headers["user-agent"] || "";
-  const isMobile = Boolean(
-    UA.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i)
-  );
+  const isMobile = Boolean(UA.match(/Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i));
 
   return {
     props: {
@@ -198,4 +165,3 @@ export async function getServerSideProps(context: NextPageContext) {
     },
   };
 }
-

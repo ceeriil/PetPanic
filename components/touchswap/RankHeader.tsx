@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { badgesLists } from "@/services/data/badgeData";
 import { useAppStore } from "@/services/store/store";
-import { HapticFeedback, initHapticFeedback, isSSR } from "@tma.js/sdk-react";
 
 export const RankHeader = () => {
   const setScreen = useAppStore(state => state.setScreen);
@@ -11,12 +10,12 @@ export const RankHeader = () => {
 
   const [hapticFeedback, setHapticFeedback] = useState<HapticFeedback | null>(null);
 
-  useEffect(() => {
+  // we replace with farcaster haptic feedback
+  /*  useEffect(() => {
     if (typeof window !== "undefined" && !isSSR()) {
       setHapticFeedback(initHapticFeedback());
     }
-  }, []);
- 
+  }, []); */
 
   const goToBadges = () => {
     setScreen("badges");
