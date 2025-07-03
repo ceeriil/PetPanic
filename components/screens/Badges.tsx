@@ -1,19 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { AutoSwipeIcon } from "../assets/AutoSwipeIcon";
-import { DolphinBadge } from "../assets/badges/DolphinBadge";
-import { KrakenBadge } from "../assets/badges/KrakenBadge";
-import { LeviathanBadge } from "../assets/badges/LeviathanBadge";
-import { MegalodonBadge } from "../assets/badges/MegalodonBadge";
-import { MinnowBadge } from "../assets/badges/MinnowBadge";
-import { OrcaBadge } from "../assets/badges/OrcaBadge";
-import { PlanktonBadge } from "../assets/badges/PlanktonBadge";
-import { SharkBadge } from "../assets/badges/SharkBadge";
-import { WhaleBadge } from "../assets/badges/WhaleBadge";
-import { BadgeCard } from "../touchswap/BadgeCard";
-import { BoostCard } from "../touchswap/BoostCard";
-import { useAppStore } from "@/services/store/store";
-import { HapticFeedback, initHapticFeedback, isSSR } from "@tma.js/sdk-react";
-import { ChevronLeftIcon } from "@heroicons/react/24/solid";
+import React, { useEffect, useState } from 'react';
+
+import { AutoSwipeIcon } from '../assets/AutoSwipeIcon';
+import { DolphinBadge } from '../assets/badges/DolphinBadge';
+import { KrakenBadge } from '../assets/badges/KrakenBadge';
+import { LeviathanBadge } from '../assets/badges/LeviathanBadge';
+import { MegalodonBadge } from '../assets/badges/MegalodonBadge';
+import { MinnowBadge } from '../assets/badges/MinnowBadge';
+import { OrcaBadge } from '../assets/badges/OrcaBadge';
+import { PlanktonBadge } from '../assets/badges/PlanktonBadge';
+import { SharkBadge } from '../assets/badges/SharkBadge';
+import { WhaleBadge } from '../assets/badges/WhaleBadge';
+import { BadgeCard } from '../touchswap/BadgeCard';
+import { BoostCard } from '../touchswap/BoostCard';
+import { useAppStore } from '@/services/store/store';
+
+/* import { HapticFeedback, initHapticFeedback, isSSR } from "@tma.js/sdk-react"; */
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 
 type BadgesList = {
   title: string;
@@ -28,7 +30,7 @@ type BadgesList = {
 
 export const badgesLists: BadgesList[] = [
   {
-    title: "Plankton",
+    title: 'Plankton',
     requiredCoin: 30000,
     isUnlocked: true,
     claimed: true,
@@ -37,7 +39,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <PlanktonBadge unlocked={true} />,
   },
   {
-    title: "Minnow",
+    title: 'Minnow',
     requiredCoin: 60000,
     reward: 6000,
     claimed: false,
@@ -46,7 +48,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <MinnowBadge unlocked={false} />,
   },
   {
-    title: "Dolphin",
+    title: 'Dolphin',
     requiredCoin: 120000,
     reward: 12000,
     claimed: false,
@@ -55,7 +57,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <DolphinBadge unlocked={false} />,
   },
   {
-    title: "Shark",
+    title: 'Shark',
     requiredCoin: 240000,
     reward: 24000,
     claimed: false,
@@ -64,7 +66,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <SharkBadge unlocked={false} />,
   },
   {
-    title: "Orca",
+    title: 'Orca',
     requiredCoin: 480000,
     reward: 48000,
     claimed: false,
@@ -73,7 +75,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <OrcaBadge unlocked={false} />,
   },
   {
-    title: "Whale",
+    title: 'Whale',
     requiredCoin: 960000,
     reward: 96000,
     claimed: false,
@@ -82,7 +84,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <WhaleBadge unlocked={false} />,
   },
   {
-    title: "Megalodon",
+    title: 'Megalodon',
     requiredCoin: 1920000,
     reward: 192000,
     claimed: false,
@@ -91,7 +93,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <MegalodonBadge unlocked={false} />,
   },
   {
-    title: "Leviathan",
+    title: 'Leviathan',
     requiredCoin: 3840000,
     reward: 384000,
     claimed: false,
@@ -100,7 +102,7 @@ export const badgesLists: BadgesList[] = [
     lockedIcon: <LeviathanBadge unlocked={false} />,
   },
   {
-    title: "Kraken",
+    title: 'Kraken',
     requiredCoin: 7680000,
     reward: 768000,
     claimed: false,
@@ -124,22 +126,22 @@ export const BadgesScreen = () => {
   });
 
   const [hapticFeedback, setHapticFeedback] = useState<HapticFeedback | null>(null);
-
+  /* 
   useEffect(() => {
-    if (typeof window !== "undefined" && !isSSR()) {
+    if (typeof window !== 'undefined' && !isSSR()) {
       setHapticFeedback(initHapticFeedback());
     }
-  }, []);
+  }, []); */
 
   const goBack = () => {
-    setScreen("home");
-    hapticFeedback?.impactOccurred("soft");
+    setScreen('home');
+    hapticFeedback?.impactOccurred('soft');
   };
 
   const handleClaim = (id: number, reward: number) => {
     cliamRank(id);
     updateBalance(balance + reward);
-    hapticFeedback?.impactOccurred("heavy");
+    hapticFeedback?.impactOccurred('heavy');
   };
 
   return (

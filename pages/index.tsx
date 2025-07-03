@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useEffect, useState, useMemo } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import Image from "next/image";
 import { Menubar } from "@/components/Menubar";
 import {
@@ -23,6 +23,7 @@ import { getUser } from "@/services/data/user";
 import { notification } from "@/utils/notifications";
 import { checkIfMoreThanADay } from "@/utils";
 import toost from "react-hot-toast";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 const screens = {
   badges: <BadgesScreen />,
@@ -36,7 +37,7 @@ const screens = {
 };
 
 export default function Home({ deviceType }: { deviceType: string }) {
-  const isMobile = deviceType === "mobile";
+  const { setFrameReady, isFrameReady, context, updateClientContext, notificationProxyUrl } = useMiniKit();
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
   const screen = useAppStore(state => state.screen);
@@ -71,6 +72,12 @@ export default function Home({ deviceType }: { deviceType: string }) {
   };
 
   useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [isFrameReady, setFrameReady]);
+
+  useEffect(() => {
     console.log(state);
     return () => {};
   }, [state]);
@@ -88,22 +95,14 @@ export default function Home({ deviceType }: { deviceType: string }) {
   }, []);
 
   useEffect(() => {
-    /*   if (!isSSR()) {
-      if (state.hasData) setFoundState(true);
-      else {
-        let user = initInitData()?.user;
-        if (user) setUpState(user.id);
-      }
-    } */
-
     // IMPORTANT: THIS IS A TEMPORARY SOLUTION FOR WEB. Replace this with farcaster login
-    if (state.hasData) {
-      setFoundState(true);
-    } else {
-      setFoundState(true);
-      const savedUserId = localStorage.getItem("user_id");
-      if (savedUserId) {
-        setUpState(Number(savedUserId));
+    if (!isFrameReady) {
+      if (state.hasData) {
+        setFoundState(true);
+      } else {
+        let user = context?.user;
+        if (user) setUpState(user.fid);
+        setFoundState(true);
       }
     }
 
@@ -130,7 +129,7 @@ export default function Home({ deviceType }: { deviceType: string }) {
       socketInstance.off("connect", handleConnect);
       socketInstance.off("disconnect", handleDisconnect);
     };
-  }, []);
+  }, [isFrameReady]);
 
   useEffect(() => {
     const interval = setInterval(updateEnergyByTime, ONE_SECOND * 2);

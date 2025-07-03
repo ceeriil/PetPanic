@@ -1,10 +1,9 @@
-import { Energy } from "../db/user";
-import { boolean, isSSR } from "@tma.js/sdk-react";
-import { mountStoreDevtool } from "simple-zustand-devtools";
-import { create } from "zustand";
-import { createJSONStorage, devtools, persist } from "zustand/middleware";
+import { Energy } from '../db/user';
+import { mountStoreDevtool } from 'simple-zustand-devtools';
+import { create } from 'zustand';
+import { createJSONStorage, devtools, persist } from 'zustand/middleware';
 
-export type TScreens = "badges" | "boost" | "home" | "refs" | "stats" | "quests" | "social" | "wallet";
+export type TScreens = 'badges' | 'boost' | 'home' | 'refs' | 'stats' | 'quests' | 'social' | 'wallet';
 
 export type TBoost = {
   type: string;
@@ -40,17 +39,21 @@ export type TUser = {
   lastRefillTap: Date | null;
 };
 
-export const STORE_NAME = "Touch_Swap_Store";
+export const STORE_NAME = 'Touch_Swap_Store';
 
 export const hasState = () => {
-  return isSSR() ? false : localStorage.getItem(STORE_NAME) !== null;
+  if (typeof window === 'undefined') return false;
+
+  const value = localStorage.getItem(STORE_NAME);
+  console.log('hasState', value);
+  return value !== null;
 };
 
 export const emptyUser: TUser = {
   id: -1,
-  username: "",
-  first: "",
-  last: "",
+  username: '',
+  first: '',
+  last: '',
   touches: 0,
   balance: 1000,
   rank: 0,
@@ -59,7 +62,7 @@ export const emptyUser: TUser = {
     maxEnergy: 500,
     energyLeft: 100,
   },
-  connectionId: "",
+  connectionId: '',
   totalCoinsMined: 1000,
   totalRefered: 150,
   totalReferedCliamed: 100,
@@ -82,8 +85,8 @@ export type TAppStore = {
   paidBoosts: TBoost[];
   screen: TScreens;
   user: TUser;
-  wallet:string;
-  walletCliamed:boolean;
+  wallet: string;
+  walletCliamed: boolean;
   setScreen: (newValue: TScreens, payload?: TScreenPayload | null) => void;
   updateBalance: (newBalance: number) => void;
   updatePaidBoostLevel: (boostId: number, newLevel: number) => void;
@@ -113,10 +116,10 @@ export const initialState = {
   extraTap: false,
   freeBoosts: [],
   paidBoosts: [],
-  screen: "home" as TScreens,
+  screen: 'home' as TScreens,
   user: emptyUser,
-  wallet:"",
-  walletCliamed:false
+  wallet: '',
+  walletCliamed: false,
 };
 
 export const useAppStore = create<TAppStore>()(
@@ -198,7 +201,7 @@ export const useAppStore = create<TAppStore>()(
           set(() => ({
             user: {
               ...user,
-              touches:user.touches+1,
+              touches: user.touches + 1,
               energy: {
                 ...user.energy,
                 energyLeft: newCurrentEnergy,
@@ -299,9 +302,9 @@ export const useAppStore = create<TAppStore>()(
           });
           set(() => ({ freeBoosts: updatedBoosts }));
         },
-        setWallet:(wallet:string) => {
-           set(()=> ({wallet, walletCliamed:true}))
-        }
+        setWallet: (wallet: string) => {
+          set(() => ({ wallet, walletCliamed: true }));
+        },
       }),
       {
         name: STORE_NAME,
@@ -322,7 +325,6 @@ export const useAppStore = create<TAppStore>()(
   ),
 );
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === 'development') {
   mountStoreDevtool(STORE_NAME, useAppStore);
 }
-

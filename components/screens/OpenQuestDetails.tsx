@@ -1,9 +1,12 @@
-import React, { ReactNode, useState, useEffect } from "react";
-import { ClaimReward } from "../touchswap/ClaimReward";
-import { useAppStore } from "@/services/store/store";
-import { LinkTask, QuestList } from "@/types";
-import { ChevronLeftIcon } from "@heroicons/react/24/solid";
-import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
+import React, { ReactNode, useEffect, useState } from 'react';
+
+import { ClaimReward } from '../touchswap/ClaimReward';
+import { useAppStore } from '@/services/store/store';
+import { LinkTask, QuestList } from '@/types';
+import { Address, Avatar, EthBalance, Identity, Name } from '@coinbase/onchainkit/identity';
+import { ConnectWallet, Wallet, WalletDropdown, WalletDropdownDisconnect } from '@coinbase/onchainkit/wallet';
+
+import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 
 type Props = {
   quest: QuestList;
@@ -11,7 +14,7 @@ type Props = {
   handleTaskOpen: (index: number) => void;
   claimed: boolean;
   reward: number;
-  walletTask:boolean;
+  walletTask: boolean;
 };
 
 const renderer = ({
@@ -28,7 +31,7 @@ const renderer = ({
   completed: boolean;
 }) => {
   if (completed) {
-    return "Quest is Live";
+    return 'Quest is Live';
   } else {
     return (
       <span>
@@ -44,30 +47,20 @@ const Tasks = ({
   onClaim,
   claimed,
   reward,
-  walletTask
+  walletTask,
 }: {
   tasks: LinkTask[];
   onTaskOpen: (index: number) => void;
   onClaim: () => void;
   claimed: boolean;
   reward: number;
-  walletTask:boolean
+  walletTask: boolean;
 }) => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const balance = useAppStore(state => state.user.balance);
   const updateBalance = useAppStore(state => state.updateBalance);
 
-
-const [tonConnectUI] = useTonConnectUI();
-
-  useEffect(() =>
-    tonConnectUI.onStatusChange(wallet => {
-        if(wallet)  return alert("connected")
-        else return alert("disconnected")
-        // if (wallet.connectItems?.tonProof && 'proof' in wallet.connectItems.tonProof) {
-        //     checkProofInYourBackend(wallet.connectItems.tonProof.proof, wallet.account);
-        // }
-  }), []);
+  useEffect(() => {}, []);
 
   const openModal = () => {
     if (claimed) return;
@@ -80,11 +73,11 @@ const [tonConnectUI] = useTonConnectUI();
     setIsModalOpen(false);
   };
 
-  function renderButtonOrStatus( completed:boolean, onTaskOpen:(index:number)=>void, index:number) {
+  function renderButtonOrStatus(completed: boolean, onTaskOpen: (index: number) => void, index: number) {
     if (completed) {
       return <button className="text-[0.8rem] font-bold">Done</button>;
     }
-  
+
     return (
       <button
         onClick={() => onTaskOpen(index)}
@@ -94,27 +87,42 @@ const [tonConnectUI] = useTonConnectUI();
       </button>
     );
   }
-  
 
   const allTasksCompleted = tasks.every(task => task.completed);
 
   return (
     <div>
       <div className="grid gap-2 pb-12">
-        {tasks.map(({ title, completed}, index) => {
+        {tasks.map(({ title, completed }, index) => {
           return (
             <div className="bg-[#293641] py-3 px-4 rounded-lg h-full flex items-center justify-between" key={index}>
               <div className="">
                 <h3 className="text-[0.8rem] font-[500] leading-[1.8] text-[#AFAFAF]">{title}</h3>
               </div>
-               <div>
-                  { walletTask ? 
-                    ( <TonConnectButton className="text-sm text-black py-2 px-2 rounded-lg font-medium" />)
-                  :
-                    renderButtonOrStatus(completed,(index)=>onTaskOpen(index),index)
-                  }
-                </div>
-              </div>  
+              <div>
+                {walletTask ? (
+                  <div className="text-sm text-black py-2 px-2 rounded-lg font-medium">
+                    {' '}
+                    <Wallet className="z-10">
+                      <ConnectWallet>
+                        <Name className="text-inherit" />
+                      </ConnectWallet>
+                      <WalletDropdown>
+                        <Identity className="px-4 pt-3 pb-2" hasCopyAddressOnClick>
+                          <Avatar />
+                          <Name />
+                          <Address />
+                          <EthBalance />
+                        </Identity>
+                        <WalletDropdownDisconnect />
+                      </WalletDropdown>
+                    </Wallet>
+                  </div>
+                ) : (
+                  renderButtonOrStatus(completed, index => onTaskOpen(index), index)
+                )}
+              </div>
+            </div>
           );
         })}
       </div>
@@ -129,18 +137,25 @@ const [tonConnectUI] = useTonConnectUI();
         </button>
       ) : (
         <button disabled className="btn bg-[#A7A7A7] w-full text-black py-4 font-[500] rounded-lg align-baseline">
-           All Cliamed
+          All Cliamed
         </button>
       )}
     </div>
   );
 };
 
-export const OpenQuestDetailScreen: React.FC<Props> = ({ quest, handleTaskOpen, handleClaim, claimed, reward, walletTask}) => {
+export const OpenQuestDetailScreen: React.FC<Props> = ({
+  quest,
+  handleTaskOpen,
+  handleClaim,
+  claimed,
+  reward,
+  walletTask,
+}) => {
   const setScreen = useAppStore(store => store.setScreen);
 
   const goBack = () => {
-    setScreen("quests");
+    setScreen('quests');
   };
   return (
     <section className="pb-32 overflow-y-auto">

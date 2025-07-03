@@ -3,6 +3,8 @@
   "printWidth": 120,
   "tabWidth": 2,
   "trailingComma": "all",
+  "semi": true,
+  "singleQuote": true,
   "importOrder": [
     "^react$",
     "^next/(.*)$",
@@ -10,5 +12,7 @@
     "^@heroicons/(.*)$",
     "^~~/(.*)$"
   ],
-  "importOrderSortSpecifiers": true
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"]
 }
