@@ -23,6 +23,7 @@ import { getUser } from "@/services/data/user";
 import { notification } from "@/utils/notifications";
 import { checkIfMoreThanADay } from "@/utils";
 import toost from "react-hot-toast";
+import { useMiniKit, useAddFrame, useOpenUrl, useViewProfile } from "@coinbase/onchainkit/minikit";
 
 const screens = {
   badges: <BadgesScreen />,
@@ -47,6 +48,7 @@ export default function Home({ deviceType }: { deviceType: string }) {
   const [foundState, setFoundState] = useState(false);
   const state = useAppStore(state => state);
   const freeBoost = useAppStore(state => state.freeBoosts);
+  const { setFrameReady, isFrameReady } = useMiniKit();
 
   const screenRender = screens[screen];
 
@@ -71,6 +73,13 @@ export default function Home({ deviceType }: { deviceType: string }) {
   };
 
   useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+      console.log("frame ready");
+    }
+  }, [setFrameReady, isFrameReady]);
+
+  useEffect(() => {
     console.log(state);
     return () => {};
   }, [state]);
@@ -88,6 +97,8 @@ export default function Home({ deviceType }: { deviceType: string }) {
   }, []);
 
   useEffect(() => {
+    const viewMyProfile = useViewProfile();
+    viewMyProfile();
     /*   if (!isSSR()) {
       if (state.hasData) setFoundState(true);
       else {
@@ -97,15 +108,17 @@ export default function Home({ deviceType }: { deviceType: string }) {
     } */
 
     // IMPORTANT: THIS IS A TEMPORARY SOLUTION FOR WEB. Replace this with farcaster login
-    if (state.hasData) {
-      setFoundState(true);
-    } else {
-      setFoundState(true);
-      const savedUserId = localStorage.getItem("user_id");
-      if (savedUserId) {
-        setUpState(Number(savedUserId));
-      }
-    }
+    // if (state.hasData) {
+    //   setFoundState(true);
+    // } else {
+    //   setFoundState(true);
+    //   const savedUserId = localStorage.getItem("user_id");
+    //   setUpState(1000);
+    //   // console.log("savedUserId", savedUserId);
+    //   // if (savedUserId) {
+    //   //   setUpState(Number(savedUserId));
+    //   // }
+    // }
 
     const handleConnect = () => {
       setIsConnected(true);
@@ -130,7 +143,7 @@ export default function Home({ deviceType }: { deviceType: string }) {
       socketInstance.off("connect", handleConnect);
       socketInstance.off("disconnect", handleDisconnect);
     };
-  }, []);
+  }, [isFrameReady]);
 
   useEffect(() => {
     const interval = setInterval(updateEnergyByTime, ONE_SECOND * 2);

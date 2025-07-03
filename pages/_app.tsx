@@ -31,13 +31,15 @@ const BackButtonManipulator: FC = () => {
 const App: FC<AppProps> = ({ pageProps, Component }) => {
   return (
     <>
-      <Suspense fallback={<Loader />}>
-        <BackButtonManipulator />
-        <main className="relative bgcover overflowxhidden" style={{ background: `url('/img/stars.svg')` }}>
-          <Component {...pageProps} />
-        </main>
-        <Toaster />
-      </Suspense>
+      <MiniKitProvider chain={base}>
+        <Suspense fallback={<Loader />}>
+          <BackButtonManipulator />
+          <main className="relative bgcover overflowxhidden" style={{ background: `url('/img/stars.svg')` }}>
+            <Component {...pageProps} />
+          </main>
+          <Toaster />
+        </Suspense>
+      </MiniKitProvider>
     </>
   );
 };
