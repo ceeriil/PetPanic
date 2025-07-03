@@ -37,7 +37,7 @@ const screens = {
 };
 
 export default function Home({ deviceType }: { deviceType: string }) {
-  const { setFrameReady, isFrameReady, context, updateClientContext, notificationProxyUrl } = useMiniKit()
+  const { setFrameReady, isFrameReady, context, updateClientContext, notificationProxyUrl } = useMiniKit();
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
   const screen = useAppStore(state => state.screen);
@@ -77,7 +77,6 @@ export default function Home({ deviceType }: { deviceType: string }) {
     }
   }, [isFrameReady, setFrameReady]);
 
-
   useEffect(() => {
     console.log(state);
     return () => {};
@@ -97,15 +96,16 @@ export default function Home({ deviceType }: { deviceType: string }) {
 
   useEffect(() => {
     // IMPORTANT: THIS IS A TEMPORARY SOLUTION FOR WEB. Replace this with farcaster login
-    if(!isFrameReady) {
+    if (!isFrameReady) {
       if (state.hasData) {
         setFoundState(true);
       } else {
         let user = context?.user;
         if (user) setUpState(user.fid);
+        setFoundState(true);
       }
     }
-    
+
     const handleConnect = () => {
       setIsConnected(true);
       setTransport(socketInstance.io.engine.transport.name);
@@ -131,7 +131,6 @@ export default function Home({ deviceType }: { deviceType: string }) {
     };
   }, [isFrameReady]);
 
- 
   useEffect(() => {
     const interval = setInterval(updateEnergyByTime, ONE_SECOND * 2);
     return () => clearInterval(interval);
