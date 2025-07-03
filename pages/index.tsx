@@ -1,6 +1,6 @@
 "use client";
 
-import { SetStateAction, useEffect, useState, useMemo } from "react";
+import { SetStateAction, useEffect, useState } from "react";
 import Image from "next/image";
 import { Menubar } from "@/components/Menubar";
 import {
@@ -23,7 +23,7 @@ import { getUser } from "@/services/data/user";
 import { notification } from "@/utils/notifications";
 import { checkIfMoreThanADay } from "@/utils";
 import toost from "react-hot-toast";
-import { useMiniKit, useAddFrame, useOpenUrl, useViewProfile } from "@coinbase/onchainkit/minikit";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 
 const screens = {
   badges: <BadgesScreen />,
@@ -37,7 +37,7 @@ const screens = {
 };
 
 export default function Home({ deviceType }: { deviceType: string }) {
-  const isMobile = deviceType === "mobile";
+  const { setFrameReady, isFrameReady, context, updateClientContext, notificationProxyUrl } = useMiniKit()
   const [isConnected, setIsConnected] = useState(false);
   const [transport, setTransport] = useState("N/A");
   const screen = useAppStore(state => state.screen);
@@ -48,7 +48,6 @@ export default function Home({ deviceType }: { deviceType: string }) {
   const [foundState, setFoundState] = useState(false);
   const state = useAppStore(state => state);
   const freeBoost = useAppStore(state => state.freeBoosts);
-  const { setFrameReady, isFrameReady } = useMiniKit();
 
   const screenRender = screens[screen];
 
@@ -75,9 +74,9 @@ export default function Home({ deviceType }: { deviceType: string }) {
   useEffect(() => {
     if (!isFrameReady) {
       setFrameReady();
-      console.log("frame ready");
     }
-  }, [setFrameReady, isFrameReady]);
+  }, [isFrameReady, setFrameReady]);
+
 
   useEffect(() => {
     console.log(state);
@@ -97,29 +96,16 @@ export default function Home({ deviceType }: { deviceType: string }) {
   }, []);
 
   useEffect(() => {
-    const viewMyProfile = useViewProfile();
-    viewMyProfile();
-    /*   if (!isSSR()) {
-      if (state.hasData) setFoundState(true);
-      else {
-        let user = initInitData()?.user;
-        if (user) setUpState(user.id);
-      }
-    } */
-
     // IMPORTANT: THIS IS A TEMPORARY SOLUTION FOR WEB. Replace this with farcaster login
-    // if (state.hasData) {
-    //   setFoundState(true);
-    // } else {
-    //   setFoundState(true);
-    //   const savedUserId = localStorage.getItem("user_id");
-    //   setUpState(1000);
-    //   // console.log("savedUserId", savedUserId);
-    //   // if (savedUserId) {
-    //   //   setUpState(Number(savedUserId));
-    //   // }
-    // }
-
+    if(!isFrameReady) {
+      if (state.hasData) {
+        setFoundState(true);
+      } else {
+        let user = context?.user;
+        if (user) setUpState(user.fid);
+      }
+    }
+    
     const handleConnect = () => {
       setIsConnected(true);
       setTransport(socketInstance.io.engine.transport.name);
@@ -145,6 +131,7 @@ export default function Home({ deviceType }: { deviceType: string }) {
     };
   }, [isFrameReady]);
 
+ 
   useEffect(() => {
     const interval = setInterval(updateEnergyByTime, ONE_SECOND * 2);
     return () => clearInterval(interval);

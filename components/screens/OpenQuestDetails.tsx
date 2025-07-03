@@ -3,7 +3,6 @@ import { ClaimReward } from "../touchswap/ClaimReward";
 import { useAppStore } from "@/services/store/store";
 import { LinkTask, QuestList } from "@/types";
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
-import { TonConnectButton, useTonConnectUI } from "@tonconnect/ui-react";
 
 type Props = {
   quest: QuestList;
@@ -57,17 +56,7 @@ const Tasks = ({
   const balance = useAppStore(state => state.user.balance);
   const updateBalance = useAppStore(state => state.updateBalance);
 
-
-const [tonConnectUI] = useTonConnectUI();
-
-  useEffect(() =>
-    tonConnectUI.onStatusChange(wallet => {
-        if(wallet)  return alert("connected")
-        else return alert("disconnected")
-        // if (wallet.connectItems?.tonProof && 'proof' in wallet.connectItems.tonProof) {
-        //     checkProofInYourBackend(wallet.connectItems.tonProof.proof, wallet.account);
-        // }
-  }), []);
+  useEffect(() =>{}, []);
 
   const openModal = () => {
     if (claimed) return;
@@ -109,7 +98,7 @@ const [tonConnectUI] = useTonConnectUI();
               </div>
                <div>
                   { walletTask ? 
-                    ( <TonConnectButton className="text-sm text-black py-2 px-2 rounded-lg font-medium" />)
+                    ( <div className="text-sm text-black py-2 px-2 rounded-lg font-medium" > hhdhdh</div>)
                   :
                     renderButtonOrStatus(completed,(index)=>onTaskOpen(index),index)
                   }
