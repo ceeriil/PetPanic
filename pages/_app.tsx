@@ -60,11 +60,7 @@ const Inner: FC<AppProps> = props => {
     }
   }, [debug]);
 
-  return (
-    <MiniKitProvider apiKey={process.env.NEXT_PUBLIC_CDP_CLIENT_API_KEY} chain={base}>
-      <App {...props} />
-    </MiniKitProvider>
-  );
+  return <App {...props} />;
 };
 
 export default function CustomApp(props: AppProps) {
